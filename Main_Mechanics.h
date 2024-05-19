@@ -7,6 +7,8 @@ class RadialTrigger {
 private:
 	Vector2 player;
 	Vector2 barrel;
+	float explosionRad;
+	float barrelRad;
 public:
 	RadialTrigger();
 	~RadialTrigger()noexcept;

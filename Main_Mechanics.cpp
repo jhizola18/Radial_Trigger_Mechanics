@@ -1,9 +1,12 @@
 #include "Main_Mechanics.h"
+#include "iostream"
 
 RadialTrigger::RadialTrigger()
 {
 	player = { 400.0f, 400.0f };
 	barrel = { 250.0f, 250.0f };
+	barrelRad = 20.0f;
+	explosionRad = 100.0f;
 }
 
 RadialTrigger::~RadialTrigger()noexcept
@@ -13,26 +16,22 @@ RadialTrigger::~RadialTrigger()noexcept
 
 void RadialTrigger::RadialVisualRad()
 {
-	DrawCircleLines(barrel.x, barrel.y, 100.0f, WHITE);
+	DrawCircleLines(barrel.x, barrel.y, explosionRad, WHITE);
 	Barrel();
 }
 
 void RadialTrigger::Barrel()
 {
-	DrawCircle(250,250, 20.0f,RED);
+	DrawCircle(barrel.x, barrel.y, barrelRad,RED);
 }
 
 void RadialTrigger::RadialMechanics()
 {
 	RadialVisualRad();
 
-	Vector2 Distance_Barrel_Player = Vector2Subtract(player, barrel);
-
-	int Len_barrel = sqrtf(barrel.x * barrel.x + barrel.y * barrel.y);
-
-	Vector2 Unit_barrel = {barrel.x / Len_barrel, barrel.y / Len_barrel};
-
-	float scalarproj = Vector2DotProduct(Unit_barrel, Distance_Barrel_Player);
+	//player to barrel
+	Vector2 Distance_Player_Barrel = Vector2Subtract(barrel, player);
+	float Len_Player_Barrel = sqrtf((Distance_Player_Barrel.x * Distance_Player_Barrel.x) + (Distance_Player_Barrel.y * Distance_Player_Barrel.y));
 
 	//player
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
@@ -42,18 +41,20 @@ void RadialTrigger::RadialMechanics()
 
 	DrawCircle(player.x, player.y, 10.0f, BLUE);
 
+	//Line visualization between player and barrel
+	DrawLine(player.x, player.y, barrel.x, barrel.y, WHITE);
 
-	//Detection
-	DrawLine(barrel.x, barrel.y, barrel.x + Unit_barrel.x * scalarproj, barrel.y + Unit_barrel.y * scalarproj, WHITE);
-
-	if (Unit_barrel.x < 0 && Unit_barrel.y < 0)
-	{
-		DrawText("KABOOM", 100, 100, 20, WHITE);
-	}
-	if (scalarproj * Unit_barrel.x >= 100.0f && scalarproj * Unit_barrel.y >= 100.0f)
-	{
-		DrawText("NOT KABOOM", 100, 100, 20, WHITE);
-	}
 	
+
+	if (Len_Player_Barrel <= explosionRad)
+	{
+
+		DrawText("KABOOM", 60, 60, 20, WHITE);
+
+	}
+	DrawText(TextFormat("player X: % f", player.x), 110, 110, 20, WHITE);
+	DrawText(TextFormat("player Y: % f", player.y), 110, 90, 20, WHITE);
+
+	DrawText(TextFormat("Distance Player to Barrel: % f", player.y), 110, 420, 20, WHITE);
 	
 }
